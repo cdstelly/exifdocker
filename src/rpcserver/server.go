@@ -10,10 +10,10 @@ import (
 )
 
 func startServer() {
-	be := new(rpcshared.BulkExtractor)
-	rpc.Register(be)
+	Exif := new(rpcshared.ExifTool)
+	rpc.Register(Exif)
 	rpc.HandleHTTP()
-	l, e := net.Listen("tcp", ":5555")
+	l, e := net.Listen("tcp", ":5556")
 	if e != nil {
 		log.Fatal("listen error: ", e)
 	}
@@ -23,6 +23,6 @@ func startServer() {
 func main() {
 	startServer()
 	meta := make(chan int)
-	x := <- meta    /// wait for a while, and listen
+	x := <- meta    // wait for a while, and listen
 	fmt.Println(x)
 }
