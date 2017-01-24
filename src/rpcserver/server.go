@@ -7,7 +7,25 @@ import (
 	"net/http"
 	"log"
 	"rpcshared"
+	"os"
+	"time"
+	"rpclogger"
 )
+
+var (
+	MyName     string
+	BrokerHost string
+	MyType     string
+)
+
+func init() {
+	MyName = Generate(2, "-")
+	BrokerHost = os.Getenv("BROKERHOST")
+	if len(BrokerHost) == 0 {
+		BrokerHost = "trex1:5050"
+	}
+	MyType = "ExifTools"
+}
 
 func startServer() {
 	Exif := new(rpcshared.ExifTool)
@@ -18,7 +36,18 @@ func startServer() {
 		log.Fatal("listen error: ", e)
 	}
 	go http.Serve(l, nil)
+	go PeriodicUpdate(Exif)
 }
+
+// Send the whole request history periodically
+// TODO: Decay the RequestHistory buffer. This struct will eventually get huge..
+func PeriodicUpdate(myRPCInstance *rpcshared.ExifTool) {
+	for {
+		time.Sleep(time.Millisecond * 5000)
+		rpclogger.SubmitReport(BrokerHost, MyName, MyType, myRPCInstance.RequestHistory)
+	}
+}
+
 
 func main() {
 	startServer()
