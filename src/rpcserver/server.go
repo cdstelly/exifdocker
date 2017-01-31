@@ -36,7 +36,7 @@ func startServer() {
 		log.Fatal("listen error: ", e)
 	}
 	go http.Serve(l, nil)
-	go PeriodicUpdate(Exif)
+	// go PeriodicUpdate(Exif)
 }
 
 // Send the whole request history periodically
